@@ -1,0 +1,29 @@
+services:
+  todo-app:
+    image: node:24-alpine
+    working_dir: /app
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - .:/app
+      - todo_node_modules:/app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-server
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    ports:
+      - "127.0.0.1:1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    restart: unless-stopped
+
+volumes:
+  todo_node_modules:
+    name: todo_node_modules
+  mssql_data:
+    name: mssql_data
